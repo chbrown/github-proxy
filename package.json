@@ -1,0 +1,16 @@
+{
+  "name": "github-proxy",
+  "description": "GitHub API proxy providing authentication and redis cache",
+  "version": "0.0.1",
+  "homepage": "https://github.com/chbrown/github-proxy",
+  "repository": "git://github.com/chbrown/github-proxy.git",
+  "author": "Christopher Brown <io@henrian.com> (http://henrian.com)",
+  "license": "MIT",
+  "dependencies": {
+    "async": "*",
+    "loge": "*",
+    "optimist": "*",
+    "redis": "*",
+    "request": "*"
+  }
+}
