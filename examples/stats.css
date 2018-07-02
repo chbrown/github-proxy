@@ -1,0 +1,18 @@
+table.stats {
+  display: inline-block;
+  width: auto;
+  word-break: normal;
+  margin: 0;
+  line-height: 1.0;
+  overflow: visible;
+}
+table.stats tr {
+  background: none !important;
+  border: none !important;
+}
+table.stats td {
+  border: none !important;
+  padding: 0;
+  font-size: 10px;
+  text-align: right;
+}
