@@ -7,10 +7,10 @@
   "author": "Christopher Brown <io@henrian.com> (http://henrian.com)",
   "license": "MIT",
   "dependencies": {
-    "async": "*",
-    "loge": "*",
-    "optimist": "*",
-    "redis": "*",
-    "request": "*"
+    "async": "0.9.0",
+    "loge": "0.0.3",
+    "optimist": "0.6.1",
+    "redis": "0.12.1",
+    "request": "2.46.0"
   }
 }
