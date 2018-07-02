@@ -18,3 +18,9 @@ Annotate links with forks / stars:
     style.rel = 'stylesheet';
     style.type = 'text/css';
     document.head.appendChild(style);
+
+
+## License
+
+Copyright 2014–2018 Christopher Brown.
+[MIT Licensed](https://chbrown.github.io/licenses/MIT/#2014-2018).
