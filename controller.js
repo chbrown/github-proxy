@@ -1,6 +1,5 @@
 var url = require('url')
 
-var logger = require('loge')
 var redis = require('redis')
 var request = require('request').defaults({
   headers: {
@@ -30,20 +29,20 @@ function get(url, callback) {
     if (err) return done(err)
 
     if (cached) {
-      logger.debug('Found %s in cache', url)
+      console.error('Found %s in cache', url)
       return done(null, cached)
     }
 
     request.get(url, function(err, response, body) {
       if (err) return done(err)
       if (response.statusCode != 200) {
-        logger.info('Non-200 response', body)
+        console.error('Non-200 response', body)
       }
 
       redis_client.setex(url, cache_ttl_seconds, body, function(err) {
         if (err) return done(err)
 
-        logger.debug('Retrieved %s from web', url)
+        console.error('Retrieved %s from web', url)
         done(null, body)
       })
     })

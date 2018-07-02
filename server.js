@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 var http = require('http')
 var util = require('util')
-var logger = require('loge')
 
 var optimist = require('optimist')
 .describe({
@@ -20,7 +19,6 @@ var optimist = require('optimist')
 })
 
 var argv = optimist.argv
-logger.level = argv.verbose ? 'debug' : 'info'
 
 if (argv.help) {
   optimist.showHelp()
@@ -42,6 +40,6 @@ else {
     res.setHeader('Access-Control-Allow-Methods', '*')
     controller(req, res)
   }).listen(argv.port, argv.hostname, function() {
-    logger.info('listening on http://%s:%d', argv.hostname, argv.port)
+    console.error('listening on http://%s:%d', argv.hostname, argv.port)
   })
 }
