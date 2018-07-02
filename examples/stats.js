@@ -6,7 +6,7 @@ Create a new Element with the given attributes and childNodes
 function h(tagName, attrs, ...childNodes) {
   const el = document.createElement(tagName)
   // treat attrs as the first childNode if it looks like a childNode
-  if (attrs instanceof Element || typeof attrs == 'string') {
+  if (attrs instanceof Element || typeof attrs == 'string' || typeof attrs == 'number') {
     childNodes.unshift(attrs)
   }
   else {
@@ -50,12 +50,12 @@ function getJSON(url, callback) {
 
 /**
 getStats('joyent', 'node', (err, stats) => {
-    if (err) console.error('Failed getting stats', err);
+    if (err) console.error('Failed getting stats', err)
     console.log('joyent/node stats:', stats)
-});
+})
 */
 function getStats(owner, repo, callback) {
-  getJSON('https://' + github_proxy_hostname + '/repos/' + owner + '/' + repo, (err, result) => {
+  getJSON(`https://${github_proxy_hostname}/repos/${owner}/${repo}`, (err, result) => {
     if (err) return callback(err)
     const {forks_count, stargazers_count, subscribers_count} = result
     callback(null, {
@@ -70,45 +70,49 @@ function parseOwnerRepo(anchor) {
   // maybe better as one big regex?
   const path_segments = anchor.pathname.split('/')
   if (anchor.hostname == 'github.com') {
-    // e.g., ["", "substack", "node-browserify"]
-    if (path_segments.length >= 3) {
-      return {owner: path_segments[1], repo: path_segments[2]}
+    const [, owner, repo] = path_segments // e.g., ['', 'substack', 'node-browserify']
+    if (owner && repo) {
+      return {owner, repo}
     }
   }
 
   const gh_pages_match = anchor.hostname.match(/(.+)\.github\.(io|com)/)
   if (gh_pages_match) {
-    // e.g., ["", "Pygmy", "Docs", "index.html"]
-    if (path_segments.length >= 2) {
-      return {owner: gh_pages_match[1], repo: path_segments[1]}
+    const [, owner] = gh_pages_match
+    const [, repo] = path_segments // e.g., ['', 'Pygmy', 'Docs', 'index.html']
+    if (repo) {
+      return {owner, repo}
     }
   }
+
+  return {owner: null, repo: null}
 }
 
-function decorateAnchorWithStats(anchor, stats) {
-  // anchor.appendChild(h('sup', stats.stars + ' ★'));
-  // anchor.appendChild(h('sub', stats.forks + ' ⑂'));
+function decorateAnchorWithStats(anchor, {stars, forks}) {
+  // anchor.appendChild(h('sup', `${stars} ★`))
+  // anchor.appendChild(h('sub', `${forks} ⑂`))
   const table = h('table',
                   h('tr',
-                    h('td', stats.stars),
+                    h('td', stars.toLocaleString()),
                     h('td', '★')),
                   h('tr',
-                    h('td', stats.forks),
+                    h('td', forks.toLocaleString()),
                     h('td', '⑂')))
   table.classList.add('stats')
   anchor.appendChild(table)
 }
 
-function decorate(container) {
+function decorateAllAnchors(container) {
   const anchors = container.getElementsByTagName('a')
+
   function loop(i) {
     const anchor = anchors[i]
     if (anchor) {
-      const owner_repo = parseOwnerRepo(anchor)
-      if (owner_repo) {
-        getStats(owner_repo.owner, owner_repo.repo, (err, stats) => {
+      const {owner, repo} = parseOwnerRepo(anchor)
+      if (owner && repo) {
+        getStats(owner, repo, (err, stats) => {
           if (err) {
-            console.error(err, owner_repo.owner, owner_repo.repo)
+            console.error(err, owner, repo)
             loop(i + 1)
           }
           else {
@@ -118,6 +122,7 @@ function decorate(container) {
         })
       }
       else {
+        // not a link to an identifiable GitHub repo -- skip it
         loop(i + 1)
       }
     }
@@ -126,4 +131,24 @@ function decorate(container) {
     }
   }
   loop(0)
+}
+
+function installStyles() {
+  const timestamp = new Date().getTime()
+  const href = `https://localhost/github/github-proxy/examples/stats.css?t=${timestamp}`
+  const el = h('link', {href, rel: 'stylesheet', type: 'text/css'})
+  document.head.appendChild(el)
+}
+
+function init() {
+  installStyles()
+  decorateAllAnchors(document.querySelector('.markdown-body'))
+}
+
+// wait or immediately initialize
+if (document.readyState == 'complete') {
+  init()
+}
+else {
+  document.onload = init
 }

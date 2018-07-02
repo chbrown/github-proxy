@@ -14,5 +14,8 @@ table.stats td {
   border: none !important;
   padding: 0;
   font-size: 10px;
+  text-align: center;
+}
+table.stats td:first-child {
   text-align: right;
 }
